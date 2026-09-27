@@ -1949,9 +1949,9 @@ TEST(UniformSourceParallax, ComposeLayerCameraSharesParentParallaxOrigin) {
     state->SetPointerInput(0.5, 0.5);
     state->Advance(owe::SceneFrame {});
 
-    auto photo = Arc<owe::SceneNode>::make(Eigen::Vector3f { 1920.0f, 1080.0f, 0.0f },
-                                           Eigen::Vector3f { 0.54125f, 0.54125f, 1.0f },
-                                           Eigen::Vector3f::Zero());
+    auto photo   = Arc<owe::SceneNode>::make(Eigen::Vector3f { 1920.0f, 1080.0f, 0.0f },
+                                             Eigen::Vector3f { 0.54125f, 0.54125f, 1.0f },
+                                             Eigen::Vector3f::Zero());
     auto compose = Arc<owe::SceneNode>::make(Eigen::Vector3f { 1680.87378f, 730.31299f, 0.0f },
                                              Eigen::Vector3f { 5.48290f, 5.48290f, 1.0f },
                                              Eigen::Vector3f::Zero());
@@ -1960,12 +1960,12 @@ TEST(UniformSourceParallax, ComposeLayerCameraSharesParentParallaxOrigin) {
     effect->SetParentAnchor(compose.as_ptr());
     compose->SetCamera("_rt_node_8_layer_camera"_str);
 
-    auto photo_state   = Arc<owe::UniformNodeState>::make(photo.clone(), resolver.clone());
-    auto compose_state = Arc<owe::UniformNodeState>::make(compose.clone(), resolver.clone());
-    auto effect_state  = Arc<owe::UniformNodeState>::make(effect.clone(), resolver.clone());
-    photo_state->object_id           = i32(16);
-    compose_state->object_id         = effect_state->object_id = i32(94);
-    effect_state->effect_projection_node = Some(compose.clone());
+    auto photo_state         = Arc<owe::UniformNodeState>::make(photo.clone(), resolver.clone());
+    auto compose_state       = Arc<owe::UniformNodeState>::make(compose.clone(), resolver.clone());
+    auto effect_state        = Arc<owe::UniformNodeState>::make(effect.clone(), resolver.clone());
+    photo_state->object_id   = i32(16);
+    compose_state->object_id = effect_state->object_id = i32(94);
+    effect_state->effect_projection_node               = Some(compose.clone());
     state->SetNodeState({ .index = u32(1), .generation = u32(1) }, photo_state.clone());
     state->SetNodeState({ .index = u32(2), .generation = u32(1) }, compose_state.clone());
     state->SetNodeState({ .index = u32(3), .generation = u32(1) }, effect_state.clone());
@@ -1989,9 +1989,8 @@ TEST(UniformSourceParallax, ComposeLayerCameraSharesParentParallaxOrigin) {
     const Eigen::Vector2f camera_pos = camera->GetPosition().head<2>().cast<float>();
     const Eigen::Vector2f buggy_offset =
         (compose_world - camera_pos).cwiseProduct(Eigen::Vector2f { 1.0f, 1.0f }) * 0.07f;
-    const float buggy_delta =
-        std::hypot(buggy_offset.x() - photo_offset[usize()],
-                   buggy_offset.y() - photo_offset[usize(1)]);
+    const float buggy_delta = std::hypot(buggy_offset.x() - photo_offset[usize()],
+                                         buggy_offset.y() - photo_offset[usize(1)]);
     EXPECT_GT(buggy_delta, 1.0f);
 }
 
